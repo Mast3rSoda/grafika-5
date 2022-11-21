@@ -1,0 +1,105 @@
+﻿<Window x:Class="grafika_5.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:grafika_5"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="OpenFile" />
+                <Separator />
+                <MenuItem Header="_Exit" Click="Exit" />
+            </MenuItem>
+            <MenuItem Header="_Actions">
+                <MenuItem Header="_Equalize" Click="EqualHistogram" />
+                <MenuItem Header="_Stretch" Click="StretchedHistogram" />
+                <MenuItem Header="_Otsu" Click="Otsu" />
+                <MenuItem Header="_ImageStuff" Click="ImageStuff" />
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid Name="PlotGrid" Visibility="Visible" IsEnabled="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Border BorderThickness="2" Grid.Column="0" Grid.Row="0" BorderBrush="Green">
+
+                    <WpfPlot Name="histPlot" />
+                </Border>
+                <Border BorderThickness="2" Grid.Column="0" Grid.Row="1" BorderBrush="Blue">
+                    <WpfPlot Name="newHistPlot" />
+
+                </Border>
+                <Border BorderThickness="2" BorderBrush="Red" Grid.Column="1" Grid.Row="0">
+                    <Image Name="newImage"  Stretch="Fill"></Image>
+
+                </Border>
+
+                <Border BorderThickness="2" BorderBrush="Pink">
+                    <Image Name="HistogramImage" Grid.Column="0" Grid.Row="0" Stretch="Fill"></Image>
+                </Border>
+
+                <Image Name="OriginalImage" Grid.Column="2" Grid.Row="0" Stretch="Fill"></Image>
+                <Label Name="Brightness" Grid.Row="1" Grid.Column="2" Height="40px" Content="Brightness: Default" Margin="0,0,0,70" VerticalAlignment="Center"></Label>
+                <Slider Name="BrightnessValue" Grid.Column="2" Grid.Row="1" Height="25" VerticalAlignment="Center" Margin="5,0" ValueChanged="BrightnessValue_ValueChanged" Maximum="100"></Slider>
+                <Label Name="Zakres" Grid.Row="1" Grid.Column="1" Height="40px" Content="Zakres: Default" Margin="0,0,0,70" VerticalAlignment="Center"></Label>
+                <Slider Name="ZakresValue" Grid.Column="1" Grid.Row="1"  Height="25" VerticalAlignment="Center" Margin="5,0" ValueChanged="ZakresValue_ValueChanged" Maximum="255"></Slider>
+                <Slider Name="ZakresLowValue" Grid.Column="1" Grid.Row="1" Height="25" VerticalAlignment="Top" Margin="5,120,5,0" ValueChanged="ZakresValue_ValueChanged" Maximum="255"></Slider>
+            </Grid>
+            <Grid Name="ImageGrid" Visibility="Collapsed" IsEnabled="False" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Name="OriImage" Margin="5"></Image>
+                <Image Grid.Column="1" Name="EditImage" Margin="5"></Image>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Vertical" Grid.Row="0">
+                        <Slider Name="HandThreshSlider" Minimum="0" Maximum="255" Value="0"/>
+                        <Button Name="HandThreshold" Content="Hand Threshold" Click="HandThreshold_Click"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Row="4">
+                        <Slider Name="Range" Minimum="0" Maximum="10" IsSnapToTickEnabled="True"/>
+                        <Slider Name="Limit" Minimum="0" Maximum="255" IsSnapToTickEnabled="True"/>
+                        <Button Name="Bernsen" Content="Bernsen" Click="Bernsen_Click"/>
+                    </StackPanel>
+                    <Button Grid.Row="5" Name="Niblack" Content="Niblack" Click="Niblack_Click"/>
+                    <StackPanel Orientation="Vertical" Grid.Row="6">
+                        <Slider Name="SauvolaR" Minimum="0" Maximum="255" Value="0"/>
+                        <Button Name="Sauvola" Content="Sauvola" Click="Sauvola_Click"/>
+
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+        </Grid>
+
+
+    </DockPanel>
+</Window>
