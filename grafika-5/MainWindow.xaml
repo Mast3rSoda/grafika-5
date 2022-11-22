@@ -99,7 +99,38 @@
                     <StackPanel Orientation="Vertical" Grid.Row="6">
                         <Slider Name="SauvolaR" Minimum="0" Maximum="255" Value="0"/>
                         <Button Name="Sauvola" Content="Sauvola" Click="Sauvola_Click"/>
+                    </StackPanel>
+                    <Button Name="Dylatacja" Grid.Row="7" Content="Dylatacja" Click="Dylatacja_Click"/>
+                    <Button Name="Erozja" Grid.Row="8" Content="Erozja" Click="Erozja_Click"/>
+                    <Button Name="Otwarcie" Grid.Row="9" Content="Otwarcie" Click="Otwarcie_Click"/>
+                    <Button Name="Domkniecie" Grid.Row="10" Content="Domkniecie" Click="Domkniecie_Click"/>
+                    <StackPanel Orientation="Vertical" Grid.Row="11">
+                        <Grid Name="HoMGrid" Height="60" Width="60">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="0" Grid.Column="0" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="0" Grid.Column="1" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="0" Grid.Column="2" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="1" Grid.Column="0" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="1" Grid.Column="1" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="1" Grid.Column="2" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="2" Grid.Column="0" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="2" Grid.Column="1" Background="LightGray" Click="Button_Click"/>
+                            <Button Grid.Row="2" Grid.Column="2" Background="LightGray" Click="Button_Click"/>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="HoMSlim" Content="Hit-or-Miss Slim" Click="HoMSlim_Click"/>
+                            <Button Name="HoMFAT" Content="Hit-or-Miss FAT" Click="HoMFAT_Click"/>
 
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </Grid>

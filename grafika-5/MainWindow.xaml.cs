@@ -28,6 +28,7 @@ namespace grafika_5
 
         Bitmap? sourceImage = null;
         Bitmap? imageToEdit = null;
+        Bitmap? editedImage = null;
         double[]? histogramValues = null;
         
         public MainWindow()
@@ -160,25 +161,20 @@ namespace grafika_5
             newImage.Source = ImageSourceFromBitmap(Algorithm.StretchedHistogram(bitmap, newHistPlot, (double)ZakresValue.Value, (double)ZakresLowValue.Value));
         }
 
-        private void HandThreshold_Click(object sender, RoutedEventArgs e)
-        {
-            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
-            bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.HandThreshold(bitmap, (int)HandThreshSlider.Value));
-        }
-
         private void Bernsen_Click(object sender, RoutedEventArgs e)
         {
             Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
             bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.Bernsen(bitmap, (int)Range.Value, (int)Limit.Value));
+            editedImage = Algorithm.Bernsen(bitmap, (int)Range.Value, (int)Limit.Value);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
         }
 
         private void Niblack_Click(object sender, RoutedEventArgs e)
         {
             Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
             bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.Niblack(bitmap, (int)Range.Value, Limit.Value / 255.0 - 0.5));
+            editedImage = Algorithm.Niblack(bitmap, (int)Range.Value, Limit.Value / 255.0 - 0.5);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
         }
 
         private void Sauvola_Click(object sender, RoutedEventArgs e)
@@ -186,29 +182,145 @@ namespace grafika_5
 
             Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
             bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.Sauvola(bitmap, (int)Range.Value, Limit.Value / 832.0 + 0.2, (int)SauvolaR.Value));
+            editedImage = Algorithm.Sauvola(bitmap, (int)Range.Value, Limit.Value / 832.0 + 0.2, (int)SauvolaR.Value);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
+        }
+
+        private void HandThreshold_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.imageToEdit.Clone();
+            editedImage = Algorithm.HandThreshold(bitmap, (int)HandThreshSlider.Value);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
         }
 
         private void PBlackThreshold_Click(object sender, RoutedEventArgs e)
         {
             Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
             bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.PBlackSel(bitmap, (int)PBlackThreshSlider.Value));
+            editedImage = Algorithm.PBlackSel(bitmap, (int)PBlackThreshSlider.Value);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
         }
 
         private void MeanISel_Click(object sender, RoutedEventArgs e)
         {
             Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
             bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.MeanISel(bitmap));
+            editedImage = Algorithm.MeanISel(bitmap);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
         }
 
         private void Entropy_Click(object sender, RoutedEventArgs e)
         {
             Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
             bitmap = (Bitmap)this.imageToEdit.Clone();
-            EditImage.Source = ImageSourceFromBitmap(Algorithm.Entropy(bitmap));
+            editedImage = Algorithm.Entropy(bitmap);
+            EditImage.Source = ImageSourceFromBitmap(editedImage);
         }
+
+        private void Dylatacja_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.editedImage == null)
+            {
+                MessageBox.Show("Zbinaryzuj Debilu!");
+                return;
+            }
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.editedImage.Clone();
+            editedImage = Algorithm.Dylatacja(bitmap);
+            EditImage.Source = ImageSourceFromBitmap(bitmap);
+        }
+
+        private void Erozja_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.editedImage == null)
+            {
+                MessageBox.Show("Zbinaryzuj Debilu!");
+                return;
+            }
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.editedImage.Clone();
+            editedImage = Algorithm.Erozja(bitmap);
+            EditImage.Source = ImageSourceFromBitmap(bitmap);
+        }
+
+        private void Otwarcie_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.editedImage == null)
+            {
+                MessageBox.Show("Zbinaryzuj Debilu!");
+                return;
+            }
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.editedImage.Clone();
+            editedImage = Algorithm.Otwarcie(bitmap);
+            EditImage.Source = ImageSourceFromBitmap(bitmap);
+        }
+
+        private void Domkniecie_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.editedImage == null)
+            {
+                MessageBox.Show("Zbinaryzuj Debilu!");
+                return;
+            }
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.editedImage.Clone();
+            editedImage = Algorithm.Domkniecie(bitmap);
+            EditImage.Source = ImageSourceFromBitmap(bitmap);
+        }
+
+        private void HoMSlim_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.editedImage == null)
+            {
+                MessageBox.Show("Zbinaryzuj Debilu!");
+                return;
+            }
+
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.editedImage.Clone();
+            editedImage = Algorithm.HoMSlim(bitmap, bools);
+            EditImage.Source = ImageSourceFromBitmap(bitmap);
+        }
+
+
+        private void HoMFAT_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.editedImage == null)
+            {
+                MessageBox.Show("Zbinaryzuj Debilu!");
+                return;
+            }
+
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.editedImage.Clone();
+            editedImage = Algorithm.HoMFAT(bitmap, bools);
+            EditImage.Source = ImageSourceFromBitmap(bitmap);
+        }
+
+        private bool[] bools = {false, false, false,
+                                false, false, false,
+                                false, false, false};
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+
+            SolidColorBrush brush = (SolidColorBrush)button.Background;
+            SolidColorBrush newBrush = new SolidColorBrush();
+            if (brush.Color == Colors.Green)
+                newBrush.Color = Colors.LightGray;
+            else
+                newBrush.Color = Colors.Green;
+            button.Background = newBrush;
+
+            int row = Grid.GetRow(button);
+            int col = Grid.GetColumn(button);
+            int pos = row * 3 + col;
+            bools[pos] = !bools[pos];
+        }
+
     }
 
 }

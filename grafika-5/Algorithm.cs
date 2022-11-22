@@ -302,13 +302,13 @@ namespace grafika_5
         public static Bitmap PBlackSel(Bitmap bmp, int perc)
         {
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
-            
+
             var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
             double[] histogramData = new double[256];
 
             Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
 
-            for(int i = 0; i < bmpData.Length; i += 3)
+            for (int i = 0; i < bmpData.Length; i += 3)
             {
                 histogramData[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
             }
@@ -326,7 +326,7 @@ namespace grafika_5
                 x++;
             }
 
-            for(int y = 0; y < bmpData.Length; y += 3)
+            for (int y = 0; y < bmpData.Length; y += 3)
             {
                 if ((bmpData[y] + bmpData[y + 1] + bmpData[y + 2]) / 3 < x)
                     bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 0;
@@ -358,9 +358,9 @@ namespace grafika_5
 
             double Tk = 0, Tkt = 127;
 
-            while(Tk != Tkt)
+            while (Tk != Tkt)
             {
-                double a = 0, b = 0, c = 0 , d = 0;
+                double a = 0, b = 0, c = 0, d = 0;
                 for (int i = 0; i < Tkt; i++)
                 {
                     a += i * histogramData[i];
@@ -585,15 +585,15 @@ namespace grafika_5
                 for (int x = 0; x < bmp.Width; ++x)
                 {
                     if (contrast[y, x] < limit)
-                        if (mean[y, x] >= 128) 
+                        if (mean[y, x] >= 128)
                             vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MaxValue;
                         else
                             vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MinValue;
                     else
                         if (data[y, x] >= mean[y, x])
-                            vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MaxValue;
-                        else
-                            vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MinValue;
+                        vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MaxValue;
+                    else
+                        vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MinValue;
                 }
             Marshal.Copy(vs, 0, bmpData.Scan0, vs.Length);
             bmp.UnlockBits(bmpData);
@@ -625,7 +625,7 @@ namespace grafika_5
                 }
             return result;
         }
-        public static Bitmap Niblack(Bitmap bmp, int range,  double k = 0.1)
+        public static Bitmap Niblack(Bitmap bmp, int range, double k = 0.1)
         {
             byte[,] data = ImageTo2DByteArray(bmp);
             byte[,] mean = new byte[bmp.Height, bmp.Width];
@@ -662,10 +662,10 @@ namespace grafika_5
             for (int y = 0; y < bmp.Height; ++y)
                 for (int x = 0; x < bmp.Width; ++x)
                 {
-                    if (data[y,x] < mean[y,x] - k * standardDeviation[y, x])
-                            vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MinValue;
-                        else
-                            vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MaxValue;
+                    if (data[y, x] < mean[y, x] - k * standardDeviation[y, x])
+                        vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MinValue;
+                    else
+                        vs[y * bmpData.Stride + (x * 3)] = vs[y * bmpData.Stride + (x * 3 + 1)] = vs[y * bmpData.Stride + (x * 3 + 2)] = byte.MaxValue;
                 }
             Marshal.Copy(vs, 0, bmpData.Scan0, vs.Length);
             bmp.UnlockBits(bmpData);
@@ -716,6 +716,160 @@ namespace grafika_5
                 }
             Marshal.Copy(vs, 0, bmpData.Scan0, vs.Length);
             bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+
+        public static Bitmap Dylatacja(Bitmap bmp)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            var bmpDataNotToEdit = new byte[bitmapData.Stride * bitmapData.Height];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+            Marshal.Copy(bitmapData.Scan0, bmpDataNotToEdit, 0, bmpDataNotToEdit.Length);
+
+
+            int range = 1;
+            for (int y = 0; y < bmp.Height; ++y)
+                for (int x = 0; x < bmp.Width; ++x)
+                {
+                    if (bmpDataNotToEdit[y * bitmapData.Stride + x * 3] == 255)
+                    {
+                        bool flag = false;
+                        for (int z = y - range; z <= y + range; ++z)
+                        {
+                            if (z >= 0 && z < bmp.Height)
+                                for (int i = x - range; i <= x + range; ++i)
+                                {
+                                    if (i >= 0 && i < bmp.Width)
+                                    {
+                                        if (bmpDataNotToEdit[z * bitmapData.Stride + i * 3] == 0)
+                                        {
+                                            bmpData[y * bitmapData.Stride + x * 3] =
+                                            bmpData[y * bitmapData.Stride + x * 3 + 1] =
+                                            bmpData[y * bitmapData.Stride + x * 3 + 2] = 0;
+                                            flag = true;
+                                        }
+                                    }
+                                    if (flag) break;
+                                }
+                            if (flag) break;
+                        }
+                    }
+                }
+
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+            bmp.UnlockBits(bitmapData);
+            return bmp;
+        }
+        public static Bitmap Erozja(Bitmap bmp)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            var bmpDataNotToEdit = new byte[bitmapData.Stride * bitmapData.Height];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+            Marshal.Copy(bitmapData.Scan0, bmpDataNotToEdit, 0, bmpDataNotToEdit.Length);
+
+            int range = 1;
+            for (int y = 0; y < bmp.Height; ++y)
+                for (int x = 0; x < bmp.Width; ++x)
+                {
+                    if (bmpDataNotToEdit[y * bitmapData.Stride + x * 3] == 0)
+                    {
+                        bool flag = false;
+                        for (int z = y - range; z <= y + range; ++z)
+                        {
+                            if (z >= 0 && z < bmp.Height)
+                                for (int i = x - range; i <= x + range; ++i)
+                                {
+                                    if (i >= 0 && i < bmp.Width)
+                                    {
+                                        if (bmpDataNotToEdit[z * bitmapData.Stride + i * 3] == 255)
+                                        {
+                                            bmpData[y * bitmapData.Stride + x * 3] =
+                                            bmpData[y * bitmapData.Stride + x * 3 + 1] =
+                                            bmpData[y * bitmapData.Stride + x * 3 + 2] = 255;
+                                            flag = true;
+                                        }
+                                    }
+                                    if (flag) break;
+                                }
+                            if (flag) break;
+                        }
+                    }
+                }
+
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+            bmp.UnlockBits(bitmapData);
+            return bmp;
+        }
+        public static Bitmap Otwarcie(Bitmap bmp)
+        {
+            Erozja(bmp);
+            Dylatacja(bmp);
+
+
+            return bmp;
+        }
+        public static Bitmap Domkniecie(Bitmap bmp)
+        {
+            Dylatacja(bmp);
+            Erozja(bmp);
+            return bmp;
+        }
+        public static Bitmap HoMSlim(Bitmap bmp, bool[] bools)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+
+            int range = 1;
+            for (int y = 0; y < bmp.Height; ++y)
+                for (int x = 0; x < bmp.Width; ++x)
+                {
+                    for (int z = y - range; z <= y + range; ++z)
+                    {
+                        if (z >= 0 && z < bmp.Height)
+                            for (int i = x - range; i <= x + range; ++i)
+                            {
+                                if (i >= 0 && i < bmp.Width)
+                                {
+
+                                }
+                            }
+                    }
+                }
+            return bmp;
+        }
+        public static Bitmap HoMFAT(Bitmap bmp, bool[] bools)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+
+            int range = 1;
+            for (int y = 0; y < bmp.Height; ++y)
+                for (int x = 0; x < bmp.Width; ++x)
+                {
+                    int min = 255, max = 0;
+                    for (int z = y - range; z <= y + range; ++z)
+                    {
+                        if (z >= 0 && z < bmp.Height)
+                            for (int i = x - range; i <= x + range; ++i)
+                            {
+                                if (i >= 0 && i < bmp.Width)
+                                {
+                                }
+                            }
+                    }
+                }
             return bmp;
         }
     }
