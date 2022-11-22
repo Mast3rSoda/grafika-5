@@ -356,7 +356,7 @@ namespace grafika_5
                 LUT[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
             }
 
-            double Tk = 0, Tkt = 127, Tkh = 0;
+            double Tk = 0, Tkt = 127;
 
             while(Tk != Tkt)
             {
@@ -369,6 +369,7 @@ namespace grafika_5
                 {
                     b += LUT[i];
                 }
+                if (b == 0) b++;
                 b *= 2;
                 for (int i = (int)Tkt; i < 255; i++)
                 {
@@ -378,11 +379,11 @@ namespace grafika_5
                 {
                     d += LUT[i];
                 }
+                if (d == 0) b++;
                 d *= 2;
 
-                Tkh = Tk;
-                Tk = (a / b) + (c / d);
                 Tkt = Tk;
+                Tk = (a / b) + (c / d);
             }
 
             for (int y = 0; y < bmpData.Length; y += 3)
