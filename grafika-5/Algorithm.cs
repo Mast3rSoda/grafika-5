@@ -820,18 +820,21 @@ namespace grafika_5
             Erozja(bmp);
             return bmp;
         }
-        public static Bitmap HoMSlim(Bitmap bmp, bool[] bools)
+        public static Bitmap HoMSlim(Bitmap bmp, bool[][] bools)
         {
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
             var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            var bmpDataNotToEdit = new byte[bitmapData.Stride * bitmapData.Height];
 
             Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+            Marshal.Copy(bitmapData.Scan0, bmpDataNotToEdit, 0, bmpDataNotToEdit.Length);
 
             int range = 1;
             for (int y = 0; y < bmp.Height; ++y)
                 for (int x = 0; x < bmp.Width; ++x)
                 {
+                    bool flag = false;
                     for (int z = y - range; z <= y + range; ++z)
                     {
                         if (z >= 0 && z < bmp.Height)
@@ -839,26 +842,42 @@ namespace grafika_5
                             {
                                 if (i >= 0 && i < bmp.Width)
                                 {
-
+                                    // z - y, i - x
+                                    if ((bools[z - y + 1][i - x + 1] && bmpDataNotToEdit[z * bitmapData.Stride + i * 3] == 0) ||
+                                       (!bools[z - y + 1][i - x + 1] && bmpDataNotToEdit[z * bitmapData.Stride + i * 3] == 255))
+                                    {
+                                        flag = true;
+                                        break;
+                                    }
                                 }
+                                if (flag) break;
                             }
+                        if (flag) break;
                     }
+                    if (!flag)  bmpData[y * bitmapData.Stride + x * 3] =
+                                bmpData[y * bitmapData.Stride + x * 3 + 1] =
+                                bmpData[y * bitmapData.Stride + x * 3 + 2] = 0;
                 }
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+            bmp.UnlockBits(bitmapData);
             return bmp;
         }
-        public static Bitmap HoMFAT(Bitmap bmp, bool[] bools)
+
+        public static Bitmap HoMFAT(Bitmap bmp, bool[][] bools)
         {
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
             var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            var bmpDataNotToEdit = new byte[bitmapData.Stride * bitmapData.Height];
 
             Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+            Marshal.Copy(bitmapData.Scan0, bmpDataNotToEdit, 0, bmpDataNotToEdit.Length);
 
             int range = 1;
             for (int y = 0; y < bmp.Height; ++y)
                 for (int x = 0; x < bmp.Width; ++x)
                 {
-                    int min = 255, max = 0;
+                    bool flag = false;
                     for (int z = y - range; z <= y + range; ++z)
                     {
                         if (z >= 0 && z < bmp.Height)
@@ -866,10 +885,24 @@ namespace grafika_5
                             {
                                 if (i >= 0 && i < bmp.Width)
                                 {
+                                    // z - y, i - x
+                                    if ((bools[z - y + 1][i - x + 1] && bmpDataNotToEdit[z * bitmapData.Stride + i * 3] == 0) ||
+                                       (!bools[z - y + 1][i - x + 1] && bmpDataNotToEdit[z * bitmapData.Stride + i * 3] == 255))
+                                    {
+                                        flag = true;
+                                        break;
+                                    }
                                 }
+                                if (flag) break;
                             }
+                        if (flag) break;
                     }
+                    if (!flag) bmpData[y * bitmapData.Stride + x * 3] =
+                                bmpData[y * bitmapData.Stride + x * 3 + 1] =
+                                bmpData[y * bitmapData.Stride + x * 3 + 2] = 255;
                 }
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+            bmp.UnlockBits(bitmapData);
             return bmp;
         }
     }

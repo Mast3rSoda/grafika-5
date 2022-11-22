@@ -299,9 +299,10 @@ namespace grafika_5
             EditImage.Source = ImageSourceFromBitmap(bitmap);
         }
 
-        private bool[] bools = {false, false, false,
-                                false, false, false,
-                                false, false, false};
+        private bool[][] bools = new bool[][] {
+                                new bool[] { false, false, false },
+                                new bool[] { false, false, false },
+                                new bool[] { false, false, false } };
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -317,8 +318,7 @@ namespace grafika_5
 
             int row = Grid.GetRow(button);
             int col = Grid.GetColumn(button);
-            int pos = row * 3 + col;
-            bools[pos] = !bools[pos];
+            bools[row][col] = !bools[row][col];
         }
 
     }
