@@ -89,6 +89,7 @@
                         <Button Name="PBlackThreshold" Content="Percent Black Selection" Click="PBlackThreshold_Click"/>
                     </StackPanel>
                         <Button Name="MeanISel" Grid.Row="2" Content="Mean Iterative Selection" Click="MeanISel_Click"/>
+                        <Button Name="Entropy" Grid.Row="3" Content="Entropy Selection" Click="Entropy_Click"/>
                     <StackPanel Orientation="Vertical" Grid.Row="4">
                         <Slider Name="Range" Minimum="0" Maximum="10" IsSnapToTickEnabled="True"/>
                         <Slider Name="Limit" Minimum="0" Maximum="255" IsSnapToTickEnabled="True"/>

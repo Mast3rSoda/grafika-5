@@ -202,6 +202,13 @@ namespace grafika_5
             bitmap = (Bitmap)this.imageToEdit.Clone();
             EditImage.Source = ImageSourceFromBitmap(Algorithm.MeanISel(bitmap));
         }
+
+        private void Entropy_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.imageToEdit.Clone();
+            EditImage.Source = ImageSourceFromBitmap(Algorithm.Entropy(bitmap));
+        }
     }
 
 }

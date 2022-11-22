@@ -304,25 +304,25 @@ namespace grafika_5
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
             
             var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
-            double[] LUT = new double[256];
+            double[] histogramData = new double[256];
 
             Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
 
             for(int i = 0; i < bmpData.Length; i += 3)
             {
-                LUT[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
+                histogramData[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
             }
             var pixelCount = bitmapData.Width * bitmapData.Height;
-            for (int i = 0; i < LUT.Length; i++)
+            for (int i = 0; i < histogramData.Length; i++)
             {
-                double a = LUT[i] / (double)pixelCount;
-                LUT[i] = a * 100;
+                double a = histogramData[i] / (double)pixelCount;
+                histogramData[i] = a * 100;
             }
             double total = 0;
             int x = 0;
             while (total < perc)
             {
-                total += LUT[x];
+                total += histogramData[x];
                 x++;
             }
 
@@ -347,13 +347,13 @@ namespace grafika_5
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
             var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
-            double[] LUT = new double[256];
+            double[] histogramData = new double[256];
 
             Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
 
             for (int i = 0; i < bmpData.Length; i += 3)
             {
-                LUT[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
+                histogramData[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
             }
 
             double Tk = 0, Tkt = 127;
@@ -363,21 +363,21 @@ namespace grafika_5
                 double a = 0, b = 0, c = 0 , d = 0;
                 for (int i = 0; i < Tkt; i++)
                 {
-                    a += i * LUT[i];
+                    a += i * histogramData[i];
                 }
                 for (int i = 0; i < Tkt; i++)
                 {
-                    b += LUT[i];
+                    b += histogramData[i];
                 }
                 if (b == 0) b++;
                 b *= 2;
                 for (int i = (int)Tkt; i < 255; i++)
                 {
-                    c += i * LUT[i];
+                    c += i * histogramData[i];
                 }
                 for (int i = (int)Tkt; i < 255; i++)
                 {
-                    d += LUT[i];
+                    d += histogramData[i];
                 }
                 if (d == 0) b++;
                 d *= 2;
@@ -389,6 +389,52 @@ namespace grafika_5
             for (int y = 0; y < bmpData.Length; y += 3)
             {
                 if ((bmpData[y] + bmpData[y + 1] + bmpData[y + 2]) / 3 < Tk)
+                    bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 0;
+                else
+                    bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 255;
+            }
+
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+
+            bmp.UnlockBits(bitmapData);
+
+            return bmp;
+        }
+
+        public static Bitmap Entropy(Bitmap bmp)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            double[] histogramData = new double[256];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+
+            for (int i = 0; i < bmpData.Length; i += 3)
+            {
+                histogramData[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
+            }
+
+            var pixelCount = bitmapData.Width * bitmapData.Height;
+
+            for (int i = 0; i < histogramData.Length; i++)
+            {
+                histogramData[i] /= (double)pixelCount;
+                histogramData[i] *= 100;
+            }
+            double sum = 0;
+
+            for (int i = 1; i < histogramData.Length; i++)
+            {
+                if (histogramData[i] != 0)
+                    sum += histogramData[i] * Math.Log(histogramData[i]);
+            }
+
+            sum *= -1;
+
+            for (int y = 0; y < bmpData.Length; y += 3)
+            {
+                if ((bmpData[y] + bmpData[y + 1] + bmpData[y + 2]) / 3 < sum)
                     bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 0;
                 else
                     bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 255;
