@@ -188,6 +188,20 @@ namespace grafika_5
             bitmap = (Bitmap)this.imageToEdit.Clone();
             EditImage.Source = ImageSourceFromBitmap(Algorithm.Sauvola(bitmap, (int)Range.Value, Limit.Value / 832.0 + 0.2, (int)SauvolaR.Value));
         }
+
+        private void PBlackThreshold_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.imageToEdit.Clone();
+            EditImage.Source = ImageSourceFromBitmap(Algorithm.PBlackSel(bitmap, (int)PBlackThreshSlider.Value));
+        }
+
+        private void MeanISel_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(this.sourceImage.Width, this.sourceImage.Height);
+            bitmap = (Bitmap)this.imageToEdit.Clone();
+            EditImage.Source = ImageSourceFromBitmap(Algorithm.MeanISel(bitmap));
+        }
     }
 
 }

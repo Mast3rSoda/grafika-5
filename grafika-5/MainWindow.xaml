@@ -84,6 +84,11 @@
                         <Slider Name="HandThreshSlider" Minimum="0" Maximum="255" Value="0"/>
                         <Button Name="HandThreshold" Content="Hand Threshold" Click="HandThreshold_Click"/>
                     </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Row="1">
+                        <Slider Name="PBlackThreshSlider" Minimum="0" Maximum="100" Value="0"/>
+                        <Button Name="PBlackThreshold" Content="Percent Black Selection" Click="PBlackThreshold_Click"/>
+                    </StackPanel>
+                        <Button Name="MeanISel" Grid.Row="2" Content="Mean Iterative Selection" Click="MeanISel_Click"/>
                     <StackPanel Orientation="Vertical" Grid.Row="4">
                         <Slider Name="Range" Minimum="0" Maximum="10" IsSnapToTickEnabled="True"/>
                         <Slider Name="Limit" Minimum="0" Maximum="255" IsSnapToTickEnabled="True"/>

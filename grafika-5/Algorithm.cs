@@ -1,4 +1,5 @@
 ﻿using ScottPlot;
+using ScottPlot.Drawing.Colormaps;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace grafika_5
 {
@@ -297,12 +299,111 @@ namespace grafika_5
             }
         }
 
+        public static Bitmap PBlackSel(Bitmap bmp, int perc)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+            
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            double[] LUT = new double[256];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+
+            for(int i = 0; i < bmpData.Length; i += 3)
+            {
+                LUT[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
+            }
+            var pixelCount = bitmapData.Width * bitmapData.Height;
+            for (int i = 0; i < LUT.Length; i++)
+            {
+                double a = LUT[i] / (double)pixelCount;
+                LUT[i] = a * 100;
+            }
+            double total = 0;
+            int x = 0;
+            while (total < perc)
+            {
+                total += LUT[x];
+                x++;
+            }
+
+            for(int y = 0; y < bmpData.Length; y += 3)
+            {
+                if ((bmpData[y] + bmpData[y + 1] + bmpData[y + 2]) / 3 < x)
+                    bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 0;
+                else
+                    bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 255;
+            }
+
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+
+            bmp.UnlockBits(bitmapData);
+
+
+            return bmp;
+        }
+
+        public static Bitmap MeanISel(Bitmap bmp)
+        {
+            BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            var bmpData = new byte[bitmapData.Stride * bitmapData.Height];
+            double[] LUT = new double[256];
+
+            Marshal.Copy(bitmapData.Scan0, bmpData, 0, bmpData.Length);
+
+            for (int i = 0; i < bmpData.Length; i += 3)
+            {
+                LUT[(bmpData[i] + bmpData[i + 1] + bmpData[i + 2]) / 3]++;
+            }
+
+            double Tk = 0, Tkt = 127, Tkh = 0;
+
+            while(Tk != Tkt)
+            {
+                double a = 0, b = 0, c = 0 , d = 0;
+                for (int i = 0; i < Tkt; i++)
+                {
+                    a += i * LUT[i];
+                }
+                for (int i = 0; i < Tkt; i++)
+                {
+                    b += LUT[i];
+                }
+                b *= 2;
+                for (int i = (int)Tkt; i < 255; i++)
+                {
+                    c += i * LUT[i];
+                }
+                for (int i = (int)Tkt; i < 255; i++)
+                {
+                    d += LUT[i];
+                }
+                d *= 2;
+
+                Tkh = Tk;
+                Tk = (a / b) + (c / d);
+                Tkt = Tk;
+            }
+
+            for (int y = 0; y < bmpData.Length; y += 3)
+            {
+                if ((bmpData[y] + bmpData[y + 1] + bmpData[y + 2]) / 3 < Tk)
+                    bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 0;
+                else
+                    bmpData[y] = bmpData[y + 1] = bmpData[y + 2] = 255;
+            }
+
+            Marshal.Copy(bmpData, 0, bitmapData.Scan0, bmpData.Length);
+
+            bmp.UnlockBits(bitmapData);
+
+            return bmp;
+        }
+
         public static Bitmap GetOtsu(Bitmap bmp, WpfPlot plot)
         {
             double[] histogram = getHistogramData(bmp, null)[0];
-
             double avgValue = 0;
-
             for (int i = 0; i < 256; i++)
             {
                 avgValue += histogram[i];
